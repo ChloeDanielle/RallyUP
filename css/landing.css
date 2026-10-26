@@ -1,0 +1,1 @@
+.action-row{display:flex;gap:10px;flex-wrap:wrap}.matchup-modal{max-width:720px}.matchup-row{display:grid;grid-template-columns:42px 90px 1fr auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid #D5E8CF}@media(max-width:560px){.matchup-row{grid-template-columns:35px 78px 1fr;gap:7px}.matchup-row strong:last-child{grid-column:3}.matchup-modal{padding:16px}}

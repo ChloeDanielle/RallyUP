@@ -1,0 +1,2 @@
+.landing-copy:after{content:'2v2 matches          Live dashboard          Host controls\A Random partners    Score + leaderboard    Start, score, end';white-space:pre;display:block;width:fit-content;max-width:100%;margin-top:34px;background:#f3f6f9;border-radius:18px;padding:14px 16px;color:#68758a;font:700 13px/2 'Nunito Sans',sans-serif;box-sizing:border-box;word-spacing:2px}
+@media(max-width:700px){.landing-copy:after{width:100%;font-size:11px;word-spacing:0;overflow:hidden}}
