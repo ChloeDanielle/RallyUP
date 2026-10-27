@@ -1,0 +1,39 @@
+/* Desktop landing composition: two balanced columns inside the reference card. */
+@media (min-width: 701px) {
+  .landing {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(340px, .9fr);
+    align-items: center;
+    gap: 42px;
+    min-height: 520px;
+    padding: 82px 40px 30px;
+  }
+
+  .landing-header {
+    position: absolute;
+    inset: 42px 40px auto;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .landing-header p { display: none; }
+  .landing-copy { grid-column: 1; grid-row: 1; padding-top: 0; min-width: 0; }
+  .landing-copy:before { display: none; }
+  .landing-visual { grid-column: 2; grid-row: 1; min-width: 0; padding-top: 0; }
+  .landing .landing-visual img { display: block; width: min(100%, 430px); margin: 0 auto; }
+  .landing-copy .byline { display: none; }
+  .landing .landing-visual:after {
+    content: 'By: Chloe Gutierrez';
+    display: block;
+    margin-top: 8px;
+    color: #00a94f;
+    font-weight: 700;
+    text-align: center;
+  }
+  .landing h1:after { display: block; max-width: 560px; }
+  .landing .intro { max-width: 560px; }
+  .landing .actions { max-width: 560px; }
+}
