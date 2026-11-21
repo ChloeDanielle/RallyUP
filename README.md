@@ -4,7 +4,7 @@ RallyUp is a mobile-first pickleball open-play manager built with vanilla HTML, 
 
 ## Run locally
 
-Serve this folder with any static server, for example `npx serve .`, then open the displayed URL. Do not use `file://` because ES modules require a server.
+Run `npm run dev`, then open `http://localhost:5173`. The project includes a dependency-free local server. Do not use `file://` because ES modules require a server.
 
 Create a lobby with at least four players, open a second tab, and join with the lobby code and password to preview the viewer flow.
 
