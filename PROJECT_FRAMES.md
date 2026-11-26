@@ -78,177 +78,79 @@ The landing composition communicates:
 
 **Route:** `#/create`
 
-### Header
-
-- RallyUp wordmark.
-- **Back** button — returns to `#/`.
-- Heading: **“Set up your open play”**.
-
-### Form fields and controls
-
-#### Lobby code
-
-- Automatically generated five-character lobby code.
-- **Regenerate** — creates a new code.
-- **Copy** — copies the current code to the clipboard and shows a “Copied!” toast when supported.
-
-#### Password
-
-- Required password input.
-- Minimum length is four characters.
-- Helper text explains that the password is shared with players who want to watch.
-
-#### Add players
-
-- Single player name input, limited to 20 characters.
-- **Add** — adds one player.
-- Pressing Enter in the player input also adds the player.
-- Player names appear as removable chips.
-- Each chip has an `×` button to remove that player.
-- Multiline textarea accepts names separated by new lines or commas.
-- **Add all** — adds every pasted name.
-- Duplicate names are rejected with an inline error.
-- Player count updates as players are added or removed.
-
-#### Courts
-
-- Current court count starts at 2.
-- **−** — reduces courts, with a minimum of 1.
-- **+** — increases courts, with a maximum of 6.
-
-#### Submit
-
-- **Start Open Play** — validates the form, creates the lobby, generates matches, stores the lobby, and navigates to the host dashboard at `#/host/{CODE}`.
-- At least four players are required.
-- The number of players must also be at least four times the selected court count.
-- Validation errors appear inside the form.
+- Lobby code (auto-generated, **Regenerate**, **Copy**), password (minimum 4 characters), courts stepper (1–6).
+- **Win by 2 / Deuce Rule** toggle. YES: games to 11, win by 2, no timer. NO: games to 11 with no deuce (11–10 wins) and a 15-minute timer per game.
+- **Create Lobby & Open Check-In** creates the lobby in the check-in phase and opens the host check-in screen at `#/host/{CODE}`. Players are no longer typed in here.
 
 ## Frame 3 — Join lobby
 
 **Route:** `#/join` or `#/join?code={CODE}`
 
-### Header
+- Lobby code (auto-uppercased) and password. Errors: “Lobby not found.” and “Wrong password.”
+- Success opens `#/lobby/{CODE}`.
 
-- RallyUp wordmark.
-- **Back** button — returns to `#/`.
-- Heading: **“Join a lobby”**.
+## Frame 4 — Check-in (host)
 
-### Form fields and controls
+**Route:** `#/host/{CODE}` while the lobby is in check-in.
 
-- **Lobby code** — required, uppercased, maximum five characters.
-- **Password** — required password input.
-- **Join Lobby** — verifies the lobby code and password, saves the last-used code locally, and navigates to `#/lobby/{CODE}`.
-- Inline errors show “Lobby not found” or “Wrong password”.
+- Share card: lobby code, password, **Copy Invite** (copies a join link with code and password).
+- **Add a walk-in player:** name plus the 8-level picker (Beginner, Novice, Low Intermediate, Intermediate, Advanced, Advanced+, Elite, Pro). Duplicate names are rejected.
+- Live **Checked in** list with level tags, a level count summary, and × to remove a player.
+- Lobby setup: courts stepper and scoring rule.
+- Sticky **Start Open Play** button (needs at least 4 players) with a hint showing how many courts will be used. Asks for confirmation.
+- Anything being typed is kept when other players check in at the same time.
 
-The lobby code is prefilled from the URL query string when supplied, otherwise from the last lobby saved in local storage.
+## Frame 5 — Check-in (player)
 
-## Frame 4 — Live dashboard, host view
+**Route:** `#/lobby/{CODE}` while the lobby is in check-in.
 
-**Route:** `#/host/{CODE}`
+- **Check in** form: name and skill level (both required).
+- After check-in: “You're checked in, {name}” card with a **Not you?** button, plus the live list of checked-in players.
 
-### Header and status
+## Frame 6 — Live dashboard
 
-- RallyUp `/ OPEN PLAY` brand line.
-- **HOST CONTROLS** status pill.
-- Headline: **“Let’s play, everyone.”**
-- Lobby code, court count, and player count summary.
+**Routes:** `#/host/{CODE}` (host) and `#/lobby/{CODE}` (view only).
 
-### Tabs
+- Header: lobby code, courts, active players, scoring rule.
+- Players who checked in on this device see a personal banner (on court now / up next / matches until their next game).
+- Viewers who have not checked in see **Arriving late? Check in here**.
+- Tabs: **Courts**, **Matchups**, **Players**, and **Settings** (host only).
 
-- **Courts** — active default view.
-- **Matchups** — opens the full matchup list modal/view.
+### Courts tab
 
-### Courts section
+- One card per court. A new match is **READY**: the host taps **Start Match** to begin (and start the timer in no-deuce lobbies). Nothing starts automatically.
+- Live match: countdown timer (no-deuce) or elapsed time (deuce), **Enter Score**, **Change Player**. The last minute turns orange. At 0 the card shows **TIME’S UP** and the host gets a toast, sound, and vibration.
+- Idle court: “Waiting for players to come off another court” or “No more matchups in the queue.”
+- **Up next** preview (next 3 matchups), **View Full Matchup List**, **End Open Play** / **Leave Lobby**, and the live leaderboard (W, L, +/-).
 
-Each live court card shows:
+### Matchups tab
 
-- Court number.
-- Match number.
-- Team A player names.
-- `VS` separator.
-- Team B player names.
-- **Enter Score** — opens the score submission modal for that match.
+On court, Upcoming, and Completed lists with level tags, scores, and the winners highlighted.
 
-### Dashboard actions
+### Players tab
 
-- **View Full Matchup List** — opens the matchup list modal.
-- **End Tournament** — asks for confirmation, marks the lobby ended, and causes the final-results frame to render. Unfinished matches do not count.
+Every player with level, games, W-L, and status (Court N / Next #id / Resting / Away). The host can change a level, **Mark Away** / **Bring Back** (players on a live court are protected), and add walk-ins. These changes rebuild only the upcoming matchups.
 
-### Leaderboard card
+### Settings tab (host)
 
-- Heading: **Leaderboard**.
-- Supporting line: **“Every player. Every rally.”**
-- Columns: rank, player, wins, losses, total points.
-- During live play, total points display as an em dash.
-- **View Full Leaderboard** — replaces the main dashboard content with the leaderboard.
+Courts stepper, add N matchups / remove the last one, scoring summary, and End Open Play.
 
-### Host note
+## Frame 7 — Change Player (host)
 
-- A muted warning reminds the host not to clear browser data during the game.
+Opened from **Change Player** on a live court.
 
-## Frame 5 — Live dashboard, viewer view
+1. Pick the player to replace (Team A / Team B).
+2. Choose **Manual Change** or **Random Change**. Both only use players who are not on a live court.
+3. Manual: list of available players, closest skill level first, with games played and their next match.
 
-**Route:** `#/lobby/{CODE}`
+Result: the incoming player takes the spot on court. The outgoing player takes the incoming player's next upcoming match, so both keep the same number of games. The two names are swapped within that match, which can never create a duplicate.
 
-This is the same dashboard structure as the host view, but with view-only behavior.
+## Frame 7b — Enter Score (host)
 
-### Differences from host view
-
-- Status pill reads **👀 VIEW ONLY**.
-- Headline: **“Watch the rally.”**
-- Court cards do not show **Enter Score**.
-- **End Tournament** is replaced by **Leave Lobby**.
-- **Leave Lobby** returns to the landing page.
-
-The viewer can still switch between Courts and Matchups and view the leaderboard.
-
-## Frame 6 — Full matchup list modal
-
-**Opened from:** Matchups tab or **View Full Matchup List**.
-
-### Visible elements
-
-- Modal overlay with a rounded white panel.
-- Heading: **“Full Matchup List”**.
-- **Close** button.
-- Helper text: **“Upcoming matchups can shift as courts free up.”**
-- Rows for every generated match.
-- Match number.
-- Status pill: Live, Done, or Upcoming.
-- Team A vs Team B names.
-- Completed match scores when available.
-
-### Close behavior
-
-- **Close** removes the modal.
-- Clicking the shaded overlay outside the modal also closes it.
-
-## Frame 7 — Submit score modal
-
-**Opened from:** a host’s **Enter Score** button.
-
-### Visible elements
-
-- Modal title: **“Court {number} — Submit Score”**.
-- Current team names and `vs` text.
-- Two numeric inputs: Team A and Team B.
-- Inline score validation error area.
-- **Cancel** — closes without saving.
-- **Submit Score** — validates and saves the score.
-
-### Validation rules
-
-- Scores must be whole numbers, non-negative, and different.
-- The winner must reach at least 11 points.
-- The winner must win by at least 2 points.
-- Games above 11 must end with exactly a 2-point lead.
-
-### Submit behavior
-
-- Marks the current match as done.
-- Stores both scores and the winner.
-- Promotes the next pending match to live on the same court when available.
-- Updates the lobby and shows a “Score submitted!” toast.
+- Available after **Start Match**. Team A / Team B inputs with player names.
+- Deuce lobbies: to 11, win by 2 (games past 11 end with a 2-point lead).
+- No-deuce lobbies: first to 11 (11–10 is fine, 12–10 is not). After the timer ends, any score with a leader is accepted (for example 8–6). Ties are rejected.
+- Saving promotes the next matchup to that court as READY.
 
 ## Frame 8 — Final results
 
@@ -291,31 +193,26 @@ Top-three rows receive distinct highlight colors: gold, silver/gray, and bronze/
 ```text
 #/
 ├── #/create
-│   └── #/host/{CODE}
-│       ├── Matchups modal
-│       ├── Submit score modal
-│       └── Final results after End Tournament
+│   └── #/host/{CODE}   check-in → live dashboard → final results
 └── #/join[?code={CODE}]
-    └── #/lobby/{CODE}
-        └── Matchups modal
+    └── #/lobby/{CODE}  check-in → live dashboard (view only) → final results
 ```
 
 ## Core data and behavior
 
-- Lobby records contain a code, password, players, courts, generated matches, status, revision number, and optional end timestamp.
-- Match generation creates 2v2 games while attempting to balance player game counts, partner repetition, and opponent repetition.
-- Live rankings sort by wins, then losses, then player name.
-- Final rankings sort by wins, point differential, total points, then player name.
-- The default planned total is 30 matches.
-- The current local adapter is intended for demo use; production Firebase integration is described in `README.md`.
+- Lobby: code, password, courts, winByTwo, status (`checkin` | `live` | `ended`), players `[{name, level, active, joinedAt}]`, matches `[{id, status, court, teamA, teamB, scoreA, scoreB, winner, startedAt, endedAt}]`, rev.
+- Matchmaking priorities: never double-book a player, equal games for everyone, balanced team strength, similar levels grouped together, fresh partners and opponents.
+- When a court frees up and the next matchup needs someone still playing elsewhere, the upcoming queue is rebuilt from the players who are actually free.
+- Every change goes through `store.mutate`, which starts from the latest saved lobby and rejects any result that fails `validateLobby`.
+- Live ranking: win rate, then point difference per game. Final ranking: win rate, point difference per game, then wins.
 
 ## Main project files
 
 - `index.html` — app shell, loader, metadata, font loading, and stylesheet imports.
 - `js/main.js` — route selection and initial render.
 - `js/app.js` — landing, forms, dashboards, modals, and event handlers.
-- `js/logic.js` — match generation, score validation, stats, ranking, and lobby-code creation.
-- `js/store.js` — local storage persistence and cross-tab updates.
+- `js/logic.js` — skill levels, check-in, matchmaking, substitutions, timers, score rules, stats, validation, and repair (pure functions).
+- `js/store.js` — local storage persistence, cross-tab updates, and the validated `mutate` save path.
 - `js/results.js` — final leaderboard frame.
 - `js/ui.js` — app root, navigation, escaping, and toast helper.
 - `css/app.css` — base components, layout, forms, buttons, cards, tables, and modals.
@@ -323,5 +220,6 @@ Top-three rows receive distinct highlight colors: gold, silver/gray, and bronze/
 - `css/results.css` — final results styling.
 - `Logo/Rally Up Logo.png` — primary mascot/logo image.
 - `site.webmanifest` — standalone app metadata and icon references.
-- `tests/scoring.test.js` — score validation tests.
+- `tests/scoring.test.js`, `tests/lobby.test.js` — score rules, lobby flows, fuzzing, and fairness tests.
+- `css/play.css` — check-in, level, court, timer, and change-player styles.
 
